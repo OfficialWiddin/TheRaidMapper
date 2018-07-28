@@ -31,7 +31,7 @@ As Stupid as it may sound, an apparent workaround might be:
 Start droidVNC, start Server, switch out of app and go to System Settings -> Apps -> droidVNC -> Force stop. The server itself should continue running.
 
 ### Current limitations
-1) For the moment only 9:16 aspect ratio phones are supported. If you got a softkey bar, disable it for PoGo.
+1) For the moment only 9:16 aspect ratio phones are supported. If you have a softkey bar, disable it for PoGo.
 2) VNC app can have hick-ups....
 3) Teleporting from location to location takes the game time to load images. Faster phones may handle it better. We are testing on low end specs (Redmi 5A for $75). We will likely add a parameter to set the delays in between teleports and screenshots.
 4) Sometimes mons do not get reported to the DB. We are in the process of debugging. It can help to remove the files in the hash-folder however.
