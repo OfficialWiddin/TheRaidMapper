@@ -5,8 +5,10 @@ It consists of two parts:
 1) OCR
 2) Scan
 
-The result is a map (RocketMap to be precise) filled with Raidbosses or Eggs with their Name and Tier.
-Example screen #TODO
+The result is a map (RocketMap to be precise) filled with raid bosses or eggs with their time and tier.
+
+Example screen
+![Map Example](examples/example_map.png?raw=true "Map Example")
 
 # Requirements
 #### General
@@ -29,36 +31,49 @@ As Stupid as it may sound, an apparent workaround might be:
 Start droidVNC, start Server, switch out of app and go to System Settings -> Apps -> droidVNC -> Force stop. The server itself should continue running.
 
 ### Current limitations
-1) For the moment: 9:16 aspect ratio Smartphones only. If you got a softkey bar, disable it for pogo.
-2) VNC app apparently can have hick-ups....
-3) Teleporting from location to location takes the game to load images. Faster phones may handle it better. We are testing on low end specs (Redmi 5A for 75 bucks). We will likely add a parameter to set the delays inbetween teleports and screenshots.
+1) For the moment only 9:16 aspect ratio phones are supported. If you got a softkey bar, disable it for PoGo.
+2) VNC app can have hick-ups....
+3) Teleporting from location to location takes the game time to load images. Faster phones may handle it better. We are testing on low end specs (Redmi 5A for $75). We will likely add a parameter to set the delays in between teleports and screenshots.
 4) Sometimes mons do not get reported to the DB. We are in the process of debugging. It can help to remove the files in the hash-folder however.
 
 # Installation
-Install python according to docs for your platform.
+Install Python 2.7 according to docs for your platform.
 
-Having installed python, do get yourself python pip and run
+Once Python is installed ensure that `pip` is installed by running
+`pip --version` if it returns a version it is setup if not [visit here](https://packaging.python.org/tutorials/installing-packages/#ensure-you-can-run-pip-from-the-command-line)
+
+Once `pip` is installed run
+
 `pip install -r requirements.txt`
 
-Depending on your OS, you probably need to install some more stuff.
-E.g. Ubuntu/Debian requires you to run
+*Depending on your OS, you may need to install the following*
+#### For Ubuntu/Debian
 ```bash
 sudo apt update
 sudo apt install tesseract-ocr python-opencv
 ```
+#### For MacOS (Using Brew ([How to Install Brew](https://brew.sh/)))
+```bash
+brew install imagemagick
+brew install tesseract --all-languages
+```
+#### For Windows
+```bash
+TBC
+```
 
-#WE DO NOT GUARANTEE FOR THE ENTIRE THING TO BE RUNNING PERFECTLY FINE
+# WE DO NOT GUARANTEE FOR THE ENTIRE THING TO BE RUNNING PERFECTLY FINE
 
 ### Todos
 
  - Write tests
  - Write VNC app
  - Improve scans
- - Improve errorhandling
+ - Improve error handling
  - Support more/all resolutions
 
-#Discord
-For minor help, reporting resolutions (instructions on how to do so will be given sometime in the future), bugreports
+# Need Help...Join The Discord
+For minor help, reporting bugs and reporting resolutions (instructions on how will be given in due course)
 [Join the discord server](https://discord.gg/MC3vAH9)
 
 
