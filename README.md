@@ -15,7 +15,7 @@ The Raid Mapper is a Raid scanner for Pokemon GO, based on Android devices and O
 * Google or PTC account with minimum level 5 and no Raid-bosses in the dex  
 * Mobile with Android 8.0 (API 26) or higher
 * Root privileges [Magisk](https://forum.xda-developers.com/apps/magisk/official-magisk-v7-universal-systemless-t3473445) and [Terminal APP Systemizer](https://forum.xda-developers.com/apps/magisk/module-terminal-app-systemizer-ui-t3585851)  
-*  [Droid VNC Server](https://github.com/georgeherby/TheRaidMapper/blob/master/APKs/VNC_app.apk) and [Remote GPS Controller](https://github.com/georgeherby/TheRaidMapper/blob/master/APKs/RemoteGpsController.apk)  
+*  [Droid VNC Server](https://github.com/Grennith/TheRaidMapper/blob/master/APKs/VNC_app.apk) and [Remote GPS Controller](https://github.com/Grennith/TheRaidMapper/blob/master/APKs/RemoteGpsController.apk)  
 
 ## Current limitations
 * The only supported aspect ratio is 16:9. If you have a softkey bar, disable it for PoGO.  
@@ -34,7 +34,7 @@ Once Python is installed, ensure that `pip` and `Python` is installed correctly 
 
 
 To run a copy from the latest develop branch in git you can clone the repository:  
-`git clone https://github.com/georgeherby/TheRaidMapper.git`  
+`git clone https://github.com/Grennith/TheRaidMapper.git`  
 
 Make sure you're in the directory of TheRaidMapper and run:  
 `pip install -r requirements.txt`
