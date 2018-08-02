@@ -24,6 +24,24 @@
         "bottom" : 0.609
       }
     },
+    "weather_warning" : {
+      "click" : {
+        "x" : 0.5,
+        "y" : 0.855
+      },
+      "bounds" : {
+        "left" : 0.2,
+        "right" : 0.8,
+        "top" : 0.84,
+        "bottom" : 0.87
+      }
+    },
+    "weather_window" : {
+      "click" : {
+        "x" : 0.5,
+        "y" : 0.953
+      }
+    },
     "postLoginNewsMessage" : {
       "bounds" : {
         "left" : 0.305,
@@ -76,7 +94,7 @@
     },
     "raidcount" : {
       "bounds" : {
-        "left" : 0.764,
+        "left" : 0.774,
         "right" : 0.799,
         "top" : 0.279,
         "bottom" : 0.305
@@ -112,6 +130,8 @@
         "y" : 1334
       },
       "lines" : {
+        "firstCheckHorizontal" : 0.387,
+        "secondCheckHorizontal" : 0.611,
         "1" : {
           "horizontal" : {
             "first" : 0.367,
@@ -128,9 +148,9 @@
             "second" : 0.59
           },
           "vertical" : {
-            "first" : 0.23,
-            "second" : 0.52,
-            "third" : 0.811
+            "first" : 0.231,
+            "second" : 0.523,
+            "third" : 0.815
           }
         },
         "3+" : {
@@ -143,7 +163,7 @@
             "first" : 0.083,
             "second" : 0.375,
             "third" : 0.667,
-            "fourth" : 0.958
+            "fourth" : 0.959
           }
         }
       }

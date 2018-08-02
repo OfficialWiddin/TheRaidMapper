@@ -1,3 +1,4 @@
+*.zip
 *.pyc
 config.ini
 hash/*
@@ -8,5 +9,7 @@ unknown/*
 screenshot.png
 *.log
 hashing.json
+.DS_Store
 
 mon_img/_mon*
+*.csv

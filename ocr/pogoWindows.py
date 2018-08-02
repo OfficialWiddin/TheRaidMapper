@@ -35,6 +35,8 @@ class PogoWindows:
             os.makedirs(tempDirPath)
             log.info('PogoWindows: Temp directory created')
         self.tempDirPath = tempDirPath
+        self.width = width
+        self.height = height
 
     def __mostPresentColour(self, filename, maxColours):
         img = Image.open(filename)
@@ -69,7 +71,16 @@ class PogoWindows:
         width, height = col.size
 
         #check for the colour of the button that says "show all"
-        if (self.__mostPresentColour(tempPathColoured, width * height) != (144, 217, 152)):
+        mostPresentColour = self.__mostPresentColour(tempPathColoured, width * height)
+        log.debug('checkSpeedwarning: most present colour is %s' % str(mostPresentColour))
+        #just gonna check the most occuring colours on that button...
+        if (mostPresentColour != (144, 217, 152)
+            and mostPresentColour != (146, 217, 152)
+            and mostPresentColour != (152, 218, 151)
+            and mostPresentColour != (153, 218, 151)
+            and mostPresentColour != (151, 218, 151)
+            and mostPresentColour != (77, 209, 163)
+            and mostPresentColour != (255, 255, 255)):
             return False
 
         gray = col.convert('L')
@@ -83,7 +94,7 @@ class PogoWindows:
 
         log.debug("checkPostLoginOkButton: Checking for post-login OK button found: %s" % text)
         #if 'O. K.' in text:
-        if re.match(r'.*[o|O|0].*[k|K].*', text):
+        if re.match(r'.*[oO0][.\n\s]*[kK].*', text):
             log.debug('checkPostLoginOkButton: Found post login OK button - closing ...')
             pos = None
             if type == 'post_login_ok_driving':
@@ -99,6 +110,86 @@ class PogoWindows:
     def checkPostLoginOkButton(self, filename, hash):
         return (self.__checkPostLoginOkButton(filename, hash, 'post_login_ok_driving')
             or self.__checkPostLoginOkButton(filename, hash, 'post_login_ok_private_property'))
+
+    #checks the given rows (list of np array of image cropped by bounds) for orange
+    def __checkListOfCropOrangeCircle(self, numpyCropList):
+        countFound = 0
+        for row in numpyCropList:
+            for px in row:
+                #check the pixel colours...
+                if ((px[0] == 162 and px[1] == 193 and px[2] == 254)
+                    or (px[0] == 163 and px[1] == 194 and px[2] == 254)):
+                    countFound += 1
+        if countFound > 3:
+            #we found a 2 raid screenshot
+            log.debug("__checkListOfCropOrangeCircle: given crop contains circle")
+            return True
+        else:
+            return False
+
+    def readAmountOfRaidsDirect(self, filename, hash):
+        if not os.path.isfile(filename):
+            return None
+
+        log.debug("readAmountOfRaidsDirect: Cropping circle (orange)")
+        screenshotRead = cv2.imread(filename)
+        bounds = self.resolutionCalculator.getRaidcountBounds()
+        log.debug("readAmountOfRaidsDirect: bounds are %s" % str(bounds))
+        raidCount = screenshotRead[bounds.top : bounds.bottom, bounds.left : bounds.right]
+        tempPathColoured = self.tempDirPath + "/" + str(hash) + "_raidcount.png"
+        cv2.imwrite(tempPathColoured, raidCount)
+
+        raidCountColoured = Image.open(tempPathColoured)
+        width, height = raidCountColoured.size
+
+        #check for most present colours... if there's no orange, we can stop immediately
+        mostPresentColour = self.__mostPresentColour(tempPathColoured, width * height)
+        if (mostPresentColour != (255, 120, 55)):
+            log.info("readAmountOfRaidsDirect: No raidcount found, assuming no raids nearby")
+            #cv2.imwrite(str(hash) + "_derp.png", raidCount)
+            return 0
+
+        tempPath = self.tempDirPath + "/" + str(hash) + "_raidintersect.png"
+        #at least one raid, let's start evaluating positions and pixels, yay
+        #first check for 2 raids, those are shifted.
+        #simply check intersection of firstCheckHorizontal with first vertical of One raid
+        #left, middle, right intersecting the checkHorizontal
+        #checkHorizontal is a line crossing the orange circle...
+
+        #calculate height of bounds in px
+        #TODO: move this all to res calc?
+        firstCheckHorizontal = self.resolutionCalculator.getFirstHorizontalPxPosition()
+
+        twoRaidVerticalCheck = self.resolutionCalculator.getRaidBoundsSingle().left
+        areaToCheck = screenshotRead[firstCheckHorizontal - 3 : firstCheckHorizontal + 3,
+            twoRaidVerticalCheck - 3 : twoRaidVerticalCheck + 3]
+
+        if self.__checkListOfCropOrangeCircle(areaToCheck.tolist()):
+            log.debug("Determined screenshot to have 2 raids.")
+            return 2
+
+        boundsOne = self.resolutionCalculator.getRaidBoundsTwo(1)
+        boundsTwo = self.resolutionCalculator.getRaidBoundsTwo(2)
+        verticalChecks = [boundsOne.left, boundsOne.right, boundsTwo.right]
+        secondCheckHorizontal = self.resolutionCalculator.getSecondHorizontalPxPosition()
+
+        countOfRaids = 0
+        for verticalCheck in verticalChecks:
+            #first row
+            posToCheck = screenshotRead[firstCheckHorizontal - 3 : firstCheckHorizontal + 3,
+                verticalCheck - 3 : verticalCheck + 3]
+            if self.__checkListOfCropOrangeCircle(posToCheck.tolist()):
+                countOfRaids += 1
+            #second row
+            posToCheckTwo = screenshotRead[secondCheckHorizontal - 3 : secondCheckHorizontal + 3,
+                verticalCheck - 3 : verticalCheck + 3]
+            if self.__checkListOfCropOrangeCircle(posToCheckTwo.tolist()):
+                countOfRaids += 1
+
+        if countOfRaids == 0:
+            return -1 #raidcounter present but no raidcounts below, definitely a bug
+        else:
+            return countOfRaids
 
     def readAmountOfRaids(self, filename, hash):
         if not os.path.isfile(filename):
@@ -324,6 +415,61 @@ class PogoWindows:
         else:
             log.debug('checkSpeedwarning: No speedmessage found')
             return False
+
+    def checkWeatherWarning(self, filename, hash):
+        if not os.path.isfile(filename):
+            return False
+
+        log.debug('checkWeatherwarning: Checking for weather-warning ...')
+        col = cv2.imread(filename)
+        bounds = self.resolutionCalculator.getWeatherWarningBounds()
+        log.debug('checkWeatherwarning: got bounds %s' % str(bounds))
+        cropOfWeatherwarning = col[bounds.top:bounds.bottom, bounds.left:bounds.right]
+        tempPath = self.tempDirPath + "/" + str(hash) + "_weatherwarning.png"
+        cv2.imwrite(tempPath, cropOfWeatherwarning)
+
+        col = Image.open(tempPath)
+        width, height = col.size
+
+        mostPresentColour = self.__mostPresentColour(tempPath, width * height)
+        log.debug('checkWeatherwarning: most present colour is %s' % str(mostPresentColour))
+        #just gonna check the most occuring colours on that button...
+        if (mostPresentColour != (144, 217, 152)
+            and mostPresentColour != (146, 217, 152)
+            and mostPresentColour != (152, 218, 151)
+            and mostPresentColour != (153, 218, 151)
+            and mostPresentColour != (151, 218, 151)
+            and mostPresentColour != (77, 209, 163)
+            and mostPresentColour != (255, 255, 255)
+            and mostPresentColour != (228, 255, 222)):
+            return False
+
+        gray = col.convert('L')
+        bw = gray.point(lambda x: 0 if x<210 else 255, '1')
+        bw.save(self.tempDirPath + "/" + str(hash) + "_cropped_weatherwarning_bw.png")
+
+        passengerString = image_to_string(Image.open(self.tempDirPath + "/" + str(hash) + "_cropped_weatherwarning_bw.png"),config='-psm 7')
+
+        #cleanup
+        os.remove(self.tempDirPath + "/" + str(hash) + "_cropped_weatherwarning_bw.png")
+        os.remove(self.tempDirPath + "/" + str(hash) + "_weatherwarning.png")
+
+        log.debug("checkWeatherwarning: Found text: %s " % passengerString)
+        if len(passengerString) > 4:
+            log.debug('checkWeatherwarning: Found weather warning - closing ...')
+            posPassenger = self.resolutionCalculator.getWeatherWarningFirstClick()
+            log.debug("checkWeatherwarning: Clicking %s" % str(posPassenger))
+            self.vncWrapper.clickVnc(posPassenger.x, posPassenger.y)
+            time.sleep(1)
+            log.debug('checkWeatherwarning: Also closing the weather info ...')
+            posPassenger = self.resolutionCalculator.getWeatherWarningSecondClick()
+            log.debug("checkWeatherwarning: Clicking %s" % str(posPassenger))
+            self.vncWrapper.clickVnc(posPassenger.x, posPassenger.y)
+            return True
+        else:
+            log.debug('checkWeatherwarning: No weatherwarning found')
+            return False
+
 
     def __checkClosePresent(self, filename, hash, windowsToCheck):
         if not os.path.isfile(filename):
