@@ -1,6 +1,6 @@
-# The Raid Mapper  
-
-![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
+# Map'A'Droid
+![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)  
+![MAD-Banner](https://raw.githubusercontent.com/OfficialWiddin/TheRaidMapper/patch-1/examples/banner_small_web.png)
 
 The Raid Mapper is a Raid scanner for Pokemon GO, based on Android devices and OCR.  
 
