@@ -24,6 +24,17 @@ The Raid Mapper is a Raid scanner for Pokemon GO, based on Android devices and O
 * The Droid VNC Server can have hick-ups. The VNC app which is based on [droidVNC](https://github.com/oNaiPs/droidVncServer).
 > The app is not stable. We had it running for weeks and it would just give up for a whole day. We are planning on releasing our very own app. As Stupid as it may sound, an apparent workaround might be: Start droidVNC -> Start Server -> Switch out of the app and go to System Settings -> Apps -> droidVNC -> Force stop. The server itself should continue running.
 
+## Some examples of phones working with the project
+* Redmi 5A (annoying to setup) running LineageOS 15.1
+* Samsung S5 running LOS 15.1
+* Motorola G4
+* HTC One M7 running LOS 14.1
+* Samsung XCover 4 running stock Android 7.1.2
+
+#### Partially
+* Samsung S3 (RGC screenshots won't work -> VNC)
+
+
 ## Installation
 ### Prerequisites - Computer
 Install `Python 2.7` according to docs for your platform.  
@@ -34,7 +45,7 @@ Once Python is installed, ensure that `pip` and `Python` is installed correctly 
 
 
 To run a copy from the latest develop branch in git you can clone the repository:  
-`git clone https://github.com/Grennith/TheRaidMapper.git`  
+`git clone https://github.com/Grennith/Map-A-Droid.git`  
 
 Make sure you're in the directory of TheRaidMapper and run:  
 `pip install -r requirements.txt`
@@ -54,7 +65,8 @@ brew install tesseract --all-languages
 ```bash
 // TODO
 ```
-### Prerequisites - Mobile
+# Prerequisites - Mobile
+### Version A)
 1. Install [Magisk](https://forum.xda-developers.com/apps/magisk/official-magisk-v7-universal-systemless-t3473445) and [Terminal App Systemizer](https://forum.xda-developers.com/apps/magisk/module-terminal-app-systemizer-ui-t3585851) by flashing ([App Installs/ROM Feature Installs via Flashing](https://forum.xda-developers.com/wiki/Flashing_Guide_-_Android)).  
 
 2. Install [VNC_app.apk](https://github.com/Grennith/TheRaidMapper/blob/master/APKs/VNC_app.apk) & [RemoteGpsController.apk](https://github.com/Grennith/TheRaidMapper/blob/master/APKs/RemoteGpsController.apk) located in the `APKs` github folder.
@@ -71,11 +83,17 @@ systemize
 reboot
 ```
 
-### MySQL - Database  
+### Version B)
+1. Install [Magisk](https://forum.xda-developers.com/apps/magisk/official-magisk-v7-universal-systemless-t3473445)
+2. Install Link2SD from Google Play Store & [RemoteGpsController.apk](https://github.com/Grennith/TheRaidMapper/blob/master/APKs/RemoteGpsController.apk) located in the `APKs` github folder.
+3. Systemize RGC by opening Link2SD, scrolling to RemoteGpsController and clicking "Systemize"
+
+## MySQL - Database  
 You will need a MySQL server installed:  
 * (Tutorial from RocketMap) [Installing MySQL](https://rocketmap.readthedocs.io/en/develop/basic-install/mysql.html) 
+* Monocle is supported as well
 
-### Configuration
+## Configuration
 1. Rename `config.ini.example` to `config.ini` and fill out:  
     - MySQL Settings  
     - Device Specifics  
@@ -86,7 +104,7 @@ You will need a MySQL server installed:
 </br>
 
 2) We need gym images and there are two solutions:  
-    - If you have a RocketMap database with old gym-details, run `downloadfortimg.py`  
+    - If you have a RocketMap or Monocle database with old gym-details, run `downloadGymImages.py`  
     - Or, grab the images from [Ingress Intel Map](https://www.ingress.com/intel)  
 
 (The images should be located in `gym_img` folder)
@@ -94,7 +112,7 @@ You will need a MySQL server installed:
 </br> 
 
 3) We also need gym locations and there are two solutions:
-    - If you have a RocketMap database with old gym-details, run `downloadDBCords.py`  
+    - If you have a RocketMap database with old gym-details, run `downloadCoords.py`  
     - Or, grab the locations from [Ingress Intel Map](https://www.ingress.com/intel)  
 
 (The coords should be located in `coords.csv` if you followed the last step in 1.)
@@ -102,16 +120,16 @@ You will need a MySQL server installed:
 </br>
 
 4) Fill out the rest of the `config.ini`, the important parts are:  
-    - VNC Settings
+    - VNC Settings (if `screen_method: 1` is selected)
     - Telnet Settings (RemoteGpsController)
 
 ### Running
-1. Mobile - Start the Droid VNC Server.  
-*(Start droidVNC -> Start Server -> Switch out of the app and go to System Settings -> Apps -> droidVNC -> Force stop. The server itself should continue running.)*
-
+1. `screen_method: 1`: Mobile - Start the Droid VNC Server.  
+*(Start droidVNC -> Start Server -> Switch out of the app and go to System Settings -> Apps -> droidVNC -> Force stop. The server itself should continue running.)*<br>
+`screen_method: 0`: Skip step 1
 </br>
 
-2. Mobile - Start Remote GPS Controller.
+2. Mobile - Start Remote GPS Controller. If `screen_method: 0`: click on "Start mediaprojection" in addition to "Start Server", else just start server
 
 </br>
 
